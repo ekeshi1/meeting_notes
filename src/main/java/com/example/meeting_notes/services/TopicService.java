@@ -5,6 +5,8 @@ import com.example.meeting_notes.repository.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.transaction.Transactional;
 import java.util.List;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -41,5 +43,15 @@ public class TopicService {
     public Set<MeetingTopic> saveAll(Set<MeetingTopic> meetingTopics){
         return new HashSet<>(topicRepository.saveAll(meetingTopics));
 
+    }
+
+    @Transactional
+    public void voteRelevantTopic(Long topicId){
+        topicRepository.addRelevantVote(topicId);
+    }
+
+    @Transactional
+    public void voteNotRelevantTopic(Long topicId){
+        topicRepository.addNotRelevantVote(topicId);
     }
 }

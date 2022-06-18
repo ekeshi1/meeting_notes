@@ -3,7 +3,10 @@ package com.example.meeting_notes.services;
 import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
+import com.example.meeting_notes.dao.SummarizedMeetingEntry;
 import com.example.meeting_notes.dto.AddMeetingDTO;
+import com.example.meeting_notes.mail.EMail;
+import com.example.meeting_notes.mail.MailSenderService;
 import com.example.meeting_notes.model.MeetingTranscriptEntry;
 import com.example.meeting_notes.model.ParticipantStats;
 import com.example.meeting_notes.repository.MeetingEntryRepository;
@@ -12,6 +15,7 @@ import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
@@ -40,6 +44,18 @@ public class MeetingService {
     MeetingEntriesService meetingEntriesService;
     @Autowired
     TopicService topicService;
+
+    @Autowired
+    MailSenderService mailSenderService;
+
+    public static HashMap<String, String> userEmails;
+
+    static {
+        userEmails = new HashMap<>();
+        userEmails.put("Erald Keshi","eraldo.keshi@hotmail.com");
+        userEmails.put("Sergi M. Rodriguez", "sergimartinezrodriguez@gmail.com");
+        userEmails.put("Steve Esposito", "stevespositos@gmail.com");
+    }
     @Transactional
     public MeetingsEntity addNewMeeting(AddMeetingDTO meetingDTO) throws IOException {
         ArrayList<MeetingTranscriptEntry> transcriptEntryList;
@@ -60,8 +76,14 @@ public class MeetingService {
         MeetingsEntity meetingsEntity = new MeetingsEntity();
 
         ArrayList<MeetingsEntryEntity> meetingsEntryEntityList = (ArrayList<MeetingsEntryEntity>) transcriptEntryList.stream().map(x -> x.toEntity()).map(x->x.withMeeting(meetingsEntity)).collect(Collectors.toList());
+        for(int i=0;i<meetingsEntryEntityList.size(); i++){
+            MeetingsEntryEntity entry = meetingsEntryEntityList.get(i);
+            if(userEmails.containsKey(entry.getName())){
+                entry.setEmail(userEmails.get(entry.getName()));
+            }
+        }
+
         Set<MeetingsEntryEntity> meetingsEntryEntitySet = new LinkedHashSet(meetingsEntryEntityList);
-        System.out.println(meetingsEntryEntitySet);
 
         meetingsEntity.setMeetingName(meetingDTO.getMeetingName());
         meetingsEntity.setProjectName(meetingDTO.getProjectName());
@@ -74,11 +96,41 @@ public class MeetingService {
         meetingsEntity.setRawTranscript(meetingDTO.getRawText());
         meetingsRepository.save(meetingsEntity);
         meetingEntryRepository.saveAll(meetingsEntryEntitySet);
+        meetingEntriesService.addSummarizedMeetingEntries(Arrays.asList(new SummarizedMeetingEntry("adasdasdasdas",meetingsEntity)));
         Set<MeetingTopic> storedTopics = topicService.saveAll(meetingTopics);
         meetingsEntity.setMeetingTopics(storedTopics);
+        sendEmailsToMeetingParticipants(meetingsEntity.getMeetingName(),meetingTopics, meetingsEntryEntityList);
+
+
         return meetingsEntity;
 
     }
+
+    public void sendEmailsToMeetingParticipants(String meetingName,Set<MeetingTopic> topics, List<MeetingsEntryEntity> meetingTranscriptEntries){
+
+        Map<String,String> distinctParticipantsWithEmail = meetingTranscriptEntries.stream().collect(Collectors.toMap(entry-> entry.getEmail(), entry-> entry.getName(), (mail1, mail2) -> mail1));
+        for(Map.Entry<String,String> participantWithEmail: distinctParticipantsWithEmail.entrySet()){
+            if(Objects.isNull(participantWithEmail.getKey()))
+                continue;
+
+            EMail eMail = new EMail();
+            eMail.setFrom("erald97@ut.ee");
+            eMail.setTo(participantWithEmail.getKey());
+            eMail.setSubject("New meeting notes for meeting: "+ meetingName);
+            Map model = new HashMap<String,Object>();
+            model.put("user", participantWithEmail.getValue());
+            model.put("topics", topics);
+            final String baseUrl =
+                    ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            model.put("baseUrl", baseUrl);
+            eMail.setModel(model);
+
+            mailSenderService.sendMeetingSummaryEmail(eMail);
+
+        }
+    }
+
+
 
 
     public List<String> dummyGetTopics(){
