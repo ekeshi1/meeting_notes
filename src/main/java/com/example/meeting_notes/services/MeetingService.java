@@ -5,6 +5,7 @@ import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
 import com.example.meeting_notes.dto.AddMeetingDTO;
 import com.example.meeting_notes.model.MeetingTranscriptEntry;
+import com.example.meeting_notes.model.ParticipantStats;
 import com.example.meeting_notes.repository.MeetingEntryRepository;
 import com.example.meeting_notes.repository.MeetingsRepository;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
@@ -23,6 +24,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+
 @Service
 public class MeetingService {
 
@@ -32,7 +36,8 @@ public class MeetingService {
     @Autowired
     MeetingEntryRepository meetingEntryRepository;
     String fileName = "src/ITAC_Transscript.docx";
-
+    @Autowired
+    MeetingEntriesService meetingEntriesService;
     @Autowired
     TopicService topicService;
     @Transactional
@@ -114,5 +119,29 @@ public class MeetingService {
 
     public ArrayList<MeetingsEntity> getAllMeetings() {
         return (ArrayList<MeetingsEntity>) meetingsRepository.findAll();
+    }
+
+    public List<ParticipantStats> getParticipantStatsForMeeting(Long id){
+        List<MeetingTranscriptEntry> meetingEntriesForMeeting = meetingEntriesService.getMeetingEntriesForMeeting(id);
+
+        List<ParticipantStats> participantStats = meetingEntriesForMeeting.stream()
+                .collect(Collectors.groupingBy(r -> r.getName()))
+                .entrySet()
+                .stream()
+                .map(x-> toStats(x.getKey(), x.getValue()))
+                .collect(Collectors.toList());
+
+        return participantStats;
+
+    }
+
+    private <R> ParticipantStats toStats(String name, List<MeetingTranscriptEntry> meetingTranscriptEntries) {
+        long totalMsSpoken=0;
+
+        for(MeetingTranscriptEntry entry: meetingTranscriptEntries){
+            totalMsSpoken+=entry.getEndMs()-entry.getStartMs();
+        }
+        ParticipantStats stats = new ParticipantStats(name,null, totalMsSpoken, 0);
+        return stats;
     }
 }

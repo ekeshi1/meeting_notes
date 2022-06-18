@@ -16,4 +16,5 @@ public class MeetingEntriesService {
     public List<MeetingTranscriptEntry> getMeetingEntriesForMeeting(Long id){
         return meetingEntryRepository.findByMeetingId(id).stream().map(MeetingTranscriptEntry::fromEntity).collect(Collectors.toList());
     }
+
 }

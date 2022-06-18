@@ -6,6 +6,7 @@ import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
 import com.example.meeting_notes.dto.AddMeetingDTO;
 import com.example.meeting_notes.model.MeetingTranscriptEntry;
+import com.example.meeting_notes.model.ParticipantStats;
 import com.example.meeting_notes.services.MeetingEntriesService;
 import com.example.meeting_notes.services.MeetingService;
 import com.example.meeting_notes.services.TopicService;
@@ -52,5 +53,10 @@ public class MeetingsController {
     @GetMapping(value = "/topics/distinct")
     public ArrayList<MeetingTopic> getDistinctMeetingTopics(){
         return topicService.getDistinctTopicsForFiltering();
+    }
+
+    @GetMapping(value = "/meetings/{meetingId}/participantStats")
+    public List<ParticipantStats> getParticipantStatsForMeeting(@PathVariable Long meetingId){
+        return meetingService.getParticipantStatsForMeeting(meetingId);
     }
 }
