@@ -15,6 +15,9 @@ public class MeetingsEntryEntity {
     String name;
 
     @Column
+    String email;
+
+    @Column
     Long startMS;
 
     @Column
@@ -100,5 +103,13 @@ public class MeetingsEntryEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+    <title>HTML Editor - Full Version</title>
+</head>
+<body>
+<h1 style="text-align: center;">Hello ${user}</h1>
+
+<p style="text-align: center;">Please, select what you think was the most interesting topic</p>
+
+<p style="text-align: center;">&nbsp;</p>
+
+<#list topics as topic>
+<p style="text-align: center;"><input name="button" type="button" value="${topic.name}" />
+
+<a href="${baseUrl}/topics/${topic.id}/relevant">Relevant<a/> <a href="${baseUrl}/topics/${topic.id}/not_relevant">Not relevant<a/></p>
+</#list>
+
+
+
+
+<p style="text-align: center;">&nbsp;</p>
+</body>
+</html>

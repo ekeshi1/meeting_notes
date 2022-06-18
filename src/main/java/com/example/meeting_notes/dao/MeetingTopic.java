@@ -17,6 +17,10 @@ public class MeetingTopic {
     @JoinColumn(name="meeting_id", nullable=false)
     private MeetingsEntity topicMeeting;
 
+    public Integer relevantCount=0;
+
+    public Integer notRelevantCount=0;
+
     public MeetingTopic() {
     }
 
@@ -53,6 +57,22 @@ public class MeetingTopic {
 
     public void setTopicMeeting(MeetingsEntity topicMeeting) {
         this.topicMeeting = topicMeeting;
+    }
+
+    public Integer getRelevantCount() {
+        return relevantCount;
+    }
+
+    public void setRelevantCount(Integer relevantCount) {
+        this.relevantCount = relevantCount;
+    }
+
+    public Integer getNotRelevantCount() {
+        return notRelevantCount;
+    }
+
+    public void setNotRelevantCount(Integer notRelevantCount) {
+        this.notRelevantCount = notRelevantCount;
     }
 }
 
