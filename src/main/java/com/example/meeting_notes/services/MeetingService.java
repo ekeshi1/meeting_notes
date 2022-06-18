@@ -1,5 +1,6 @@
 package com.example.meeting_notes.services;
 
+import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
 import com.example.meeting_notes.dto.AddMeetingDTO;
@@ -15,14 +16,13 @@ import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Set;
+
 @Service
 public class MeetingService {
 
@@ -32,6 +32,9 @@ public class MeetingService {
     @Autowired
     MeetingEntryRepository meetingEntryRepository;
     String fileName = "src/ITAC_Transscript.docx";
+
+    @Autowired
+    TopicService topicService;
     @Transactional
     public MeetingsEntity addNewMeeting(AddMeetingDTO meetingDTO) throws IOException {
         ArrayList<MeetingTranscriptEntry> transcriptEntryList;
@@ -59,11 +62,22 @@ public class MeetingService {
         meetingsEntity.setDurationInMs(transcriptEntryList.get(transcriptEntryList.size()-1).getEndMs());
 
 
+        List<String> meetingTopicsStr = dummyGetTopics();
+
+        Set<MeetingTopic> meetingTopics = meetingTopicsStr.stream().map( topicName -> new MeetingTopic(topicName, meetingsEntity)).collect(Collectors.toSet());
         meetingsRepository.save(meetingsEntity);
         meetingEntryRepository.saveAll(meetingsEntryEntitySet);
+        Set<MeetingTopic> storedTopics = topicService.saveAll(meetingTopics);
+        meetingsEntity.setMeetingTopics(storedTopics);
         return meetingsEntity;
 
+    }
 
+
+    public List<String> dummyGetTopics(){
+        List<String> dummyTopicsToChoose = Arrays.asList("architecture","Server Ordering","Cross team dependency followup","Api agreement", "Leftovers","Database query implementation");
+        Collections.shuffle(dummyTopicsToChoose);
+        return dummyTopicsToChoose.subList(0,4);
     }
 
     public String meetingAsCsv() throws IOException {
@@ -96,4 +110,7 @@ public class MeetingService {
         }
     }
 
+    public ArrayList<MeetingsEntity> getAllMeetings() {
+        return (ArrayList<MeetingsEntity>) meetingsRepository.findAll();
+    }
 }

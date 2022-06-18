@@ -1,6 +1,8 @@
 package com.example.meeting_notes.dao;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -17,8 +19,12 @@ public class MeetingsEntity {
     String meetingName;
     String rawTranscript;
 
-    @OneToMany(mappedBy="meeting", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(mappedBy="meeting")
     private Set<MeetingsEntryEntity> meetingEntries;
+
+    @OneToMany(mappedBy = "topicMeeting")
+    private Set<MeetingTopic> meetingTopics;
 
     private Long durationInMs;
 
@@ -68,5 +74,13 @@ public class MeetingsEntity {
 
     public void setDurationInMs(Long durationInMs) {
         this.durationInMs = durationInMs;
+    }
+
+    public Set<MeetingTopic> getMeetingTopics() {
+        return meetingTopics;
+    }
+
+    public void setMeetingTopics(Set<MeetingTopic> meetingTopics) {
+        this.meetingTopics = meetingTopics;
     }
 }
