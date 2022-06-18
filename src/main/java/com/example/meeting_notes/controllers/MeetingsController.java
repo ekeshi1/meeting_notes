@@ -3,8 +3,10 @@ package com.example.meeting_notes.controllers;
 
 import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.dao.MeetingsEntity;
+import com.example.meeting_notes.dao.MeetingsEntryEntity;
 import com.example.meeting_notes.dto.AddMeetingDTO;
 import com.example.meeting_notes.model.MeetingTranscriptEntry;
+import com.example.meeting_notes.services.MeetingEntriesService;
 import com.example.meeting_notes.services.MeetingService;
 import com.example.meeting_notes.services.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.List;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class MeetingsController {
@@ -23,9 +25,18 @@ public class MeetingsController {
     @Autowired
     TopicService topicService;
 
+    @Autowired
+    MeetingEntriesService meetingEntriesService;
+
     @PostMapping(value = "/meetings")
     public MeetingsEntity addTranscriptToDb(@RequestBody AddMeetingDTO meetingDTO) throws IOException {
         return meetingService.addNewMeeting(meetingDTO);
+    }
+
+    @GetMapping(value = "/meetings/{meetingId}/entries")
+    List<MeetingTranscriptEntry> getEntriesForMeetingID(@PathVariable Long meetingId){
+        System.out.println(meetingId);
+        return meetingEntriesService.getMeetingEntriesForMeeting(meetingId);
     }
 
     @GetMapping(value = "/meetings")

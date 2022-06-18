@@ -17,6 +17,7 @@ public class MeetingsEntity {
 
     String projectName;
     String meetingName;
+    @Lob
     String rawTranscript;
 
     @JsonIgnore

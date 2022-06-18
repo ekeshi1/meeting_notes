@@ -46,6 +46,7 @@ public class MeetingService {
                 String durationString = textLines[i];
                 String personName = textLines[i+1];
                 String personPhrases = textLines[i+2];
+                System.out.println(personPhrases);
                 MeetingTranscriptEntry meetingTranscriptEntry = new MeetingTranscriptEntry(personName,durationString,personPhrases);
                 transcriptEntryList.add(meetingTranscriptEntry);
             }
@@ -65,6 +66,7 @@ public class MeetingService {
         List<String> meetingTopicsStr = dummyGetTopics();
 
         Set<MeetingTopic> meetingTopics = meetingTopicsStr.stream().map( topicName -> new MeetingTopic(topicName, meetingsEntity)).collect(Collectors.toSet());
+        meetingsEntity.setRawTranscript(meetingDTO.getRawText());
         meetingsRepository.save(meetingsEntity);
         meetingEntryRepository.saveAll(meetingsEntryEntitySet);
         Set<MeetingTopic> storedTopics = topicService.saveAll(meetingTopics);

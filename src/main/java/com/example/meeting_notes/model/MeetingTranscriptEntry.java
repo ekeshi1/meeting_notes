@@ -19,6 +19,13 @@ public class MeetingTranscriptEntry {
         this.text = text;
     }
 
+    public MeetingTranscriptEntry(String name, Long startMs, Long endMs, String text) {
+        this.name = name;
+        this.startMs = startMs;
+        this.endMs = endMs;
+        this.text = text;
+    }
+
     public  long getEndMinuteFromDurationString(String durationString) {
         String startPart = durationString.split(" --> ")[1];
         String startPartWithoutMs = startPart.split("\\.")[0];
@@ -89,6 +96,9 @@ public class MeetingTranscriptEntry {
     }
 
     public MeetingsEntryEntity toEntity(){
-        return new MeetingsEntryEntity(name, startMs, endMs);
+        return new MeetingsEntryEntity(name, startMs, endMs, text);
+    }
+    public static MeetingTranscriptEntry fromEntity(MeetingsEntryEntity entryEntity){
+        return new MeetingTranscriptEntry(entryEntity.getName(), entryEntity.getStartMS(), entryEntity.getEndMs(), entryEntity.getText());
     }
 }
