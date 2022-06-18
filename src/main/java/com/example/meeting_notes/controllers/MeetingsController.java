@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class MeetingsController {
 
     @Autowired
