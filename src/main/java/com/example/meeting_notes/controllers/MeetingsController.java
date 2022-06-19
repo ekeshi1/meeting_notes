@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "https://meeting-notes-frontend.herokuapp.com")
+@CrossOrigin(origins = {"https://meeting-notes-frontend.herokuapp.com","http:localhost:3000"})
 public class MeetingsController {
 
     @Autowired

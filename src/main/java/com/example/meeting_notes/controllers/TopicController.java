@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin(origins = "https://meeting-notes-frontend.herokuapp.com")
+@CrossOrigin(origins = {"https://meeting-notes-frontend.herokuapp.com","http:localhost:3000"})
 public class TopicController {
 
     @Autowired
