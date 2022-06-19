@@ -4,6 +4,7 @@ import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.services.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
+@CrossOrigin(origins = "https://meeting-notes-frontend.herokuapp.com")
 public class TopicController {
 
     @Autowired

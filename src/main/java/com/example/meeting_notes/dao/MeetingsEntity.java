@@ -3,7 +3,6 @@ package com.example.meeting_notes.dao;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -26,6 +25,10 @@ public class MeetingsEntity {
 
     @OneToMany(mappedBy = "topicMeeting")
     private Set<MeetingTopic> meetingTopics;
+
+    @OneToMany(mappedBy = "entryMeeting")
+    @JsonIgnore
+    private Set<SummarizedMeetingEntry> meetingSummarizedEntries;
 
     private Long durationInMs;
 
@@ -84,4 +87,14 @@ public class MeetingsEntity {
     public void setMeetingTopics(Set<MeetingTopic> meetingTopics) {
         this.meetingTopics = meetingTopics;
     }
+
+    public Set<SummarizedMeetingEntry> getMeetingSummarizedEntries() {
+        return meetingSummarizedEntries;
+    }
+
+    public void setMeetingSummarizedEntries(Set<SummarizedMeetingEntry> meetingSummarizedEntries) {
+        this.meetingSummarizedEntries = meetingSummarizedEntries;
+    }
+
+
 }

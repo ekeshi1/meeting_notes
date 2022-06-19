@@ -4,6 +4,7 @@ package com.example.meeting_notes.controllers;
 import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
+import com.example.meeting_notes.dao.SummarizedMeetingEntry;
 import com.example.meeting_notes.dto.AddMeetingDTO;
 import com.example.meeting_notes.mail.EMail;
 import com.example.meeting_notes.mail.MailSenderService;
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://meeting-notes-frontend.herokuapp.com")
 public class MeetingsController {
 
     @Autowired
@@ -37,6 +38,13 @@ public class MeetingsController {
     @PostMapping(value = "/meetings")
     public MeetingsEntity addTranscriptToDb(@RequestBody AddMeetingDTO meetingDTO) throws IOException {
         return meetingService.addNewMeeting(meetingDTO);
+    }
+
+    @GetMapping(value = "/meetings/{meetingId}/summarizedEntries")
+    public List<SummarizedMeetingEntry> getSummarizedEntriesForMeetingId(@PathVariable Long meetingId){
+        System.out.println("CAMEEE HEREEE");
+        List<SummarizedMeetingEntry> entryList = meetingEntriesService.getSummarizedMeetingEntriesForMeeting(meetingId);
+        return entryList;
     }
 
     @GetMapping(value = "/meetings/{meetingId}/entries")
@@ -61,4 +69,6 @@ public class MeetingsController {
     public List<ParticipantStats> getParticipantStatsForMeeting(@PathVariable Long meetingId){
         return meetingService.getParticipantStatsForMeeting(meetingId);
     }
+
+
 }

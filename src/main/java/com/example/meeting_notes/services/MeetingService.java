@@ -3,6 +3,7 @@ package com.example.meeting_notes.services;
 import com.example.meeting_notes.dao.MeetingTopic;
 import com.example.meeting_notes.dao.MeetingsEntity;
 import com.example.meeting_notes.dao.MeetingsEntryEntity;
+import com.example.meeting_notes.dao.SummarizedMeetingEntry;
 import com.example.meeting_notes.dto.AddMeetingDTO;
 import com.example.meeting_notes.mail.EMail;
 import com.example.meeting_notes.mail.MailSenderService;
@@ -95,6 +96,7 @@ public class MeetingService {
         meetingsEntity.setRawTranscript(meetingDTO.getRawText());
         meetingsRepository.save(meetingsEntity);
         meetingEntryRepository.saveAll(meetingsEntryEntitySet);
+        meetingEntriesService.addSummarizedMeetingEntries(Arrays.asList(new SummarizedMeetingEntry("adasdasdasdas",meetingsEntity)));
         Set<MeetingTopic> storedTopics = topicService.saveAll(meetingTopics);
         meetingsEntity.setMeetingTopics(storedTopics);
         sendEmailsToMeetingParticipants(meetingsEntity.getMeetingName(),meetingTopics, meetingsEntryEntityList);
